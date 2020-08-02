@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs'; // File System
 
 import uploadConfig from '@config/upload';
-import User from '@modules/users/infra/typeorm/entities/User';
+import User from '@modules/appointments/services/users/infra/typeorm/entities/User';
 import AppError from '@shared/errors/AppError';
 import IUsersRepository from '../repositories/IUsersReopsitory';
 import IStorageProvider from '@shared/container/providers/StorageProvider/models/IStorageProvider';

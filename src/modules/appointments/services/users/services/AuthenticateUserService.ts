@@ -2,7 +2,7 @@ import { compare } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
 import { injectable, inject } from 'tsyringe';
 
-import User from '@modules/users/infra/typeorm/entities/User';
+import User from '@modules/appointments/services/users/infra/typeorm/entities/User';
 
 import authConfig from '@config/auth';
 import AppError from '@shared/errors/AppError';
