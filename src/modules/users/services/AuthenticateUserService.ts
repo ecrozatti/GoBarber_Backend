@@ -1,61 +1,69 @@
+import { compare } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
-import authConfig from '@config/auth';
 import { injectable, inject } from 'tsyringe';
 
+import User from '@modules/users/infra/typeorm/entities/User';
+
+import authConfig from '@config/auth';
 import AppError from '@shared/errors/AppError';
-import IUsersRepository from '../repositories/IUsersRepository';
+import IUsersRepository from '../repositories/IUsersReopsitory';
 import IHashProvider from '../providers/HashProvider/models/IHashProvider';
 
-import User from '../infra/typeorm/entities/User';
-
 interface IRequest {
-  email: string;
-  password: string;
+   email: string;
+   password: string;
 }
 
 interface IResponse {
-  user: User;
-  token: string;
+   user: User;
+   token: string;
 }
 
 @injectable()
-class AuthenticateUserService {
-  constructor(
-    @inject('UsersRepository')
-    private usersRepository: IUsersRepository,
+class AuthenticationUserService {
+   constructor(
+      @inject('UsersRepository')
+      private usersRepository: IUsersRepository,
 
-    @inject('HashProvider')
-    private hashProvider: IHashProvider,
-  ) {}
+      @inject('HashProvider')
+      private hashProvider: IHashProvider,
+   ) {}
 
-  public async execute({ email, password }: IRequest): Promise<IResponse> {
-    const user = await this.usersRepository.findByEmail(email);
+   public async execute({ email, password }: IRequest): Promise<IResponse> {
+      const user = await this.usersRepository.findByEmail(email);
 
-    if (!user) {
-      throw new AppError('Incorrect email/senha combination. ', 401);
-    }
+      if (!user) {
+         throw new AppError('Incorrect email/password combination.', 401);
+      }
 
-    const passwordMatched = await this.hashProvider.compareHash(
-      password,
-      user.password,
-    );
+      // user.password -> é a senha criptografada do BD
+      // password -> é a senha não criptografda informada no frontend
+      // const passwordMatched = await compare(password, user.password);
+      const passwordMatched = await this.hashProvider.compareHash(password, user.password);
 
-    if (!passwordMatched) {
-      throw new AppError('Incorrect email/senha combination. ', 401);
-    }
 
-    const { secret, expiresIn } = authConfig.jwt;
+      if (!passwordMatched) {
+         throw new AppError('Incorrect email/password combination.', 401);
+      }
 
-    const token = sign({}, secret, {
-      subject: user.id,
-      expiresIn,
-    });
+      const { secret, expiresIn } = authConfig.jwt;
 
-    return {
-      user,
-      token,
-    };
-  }
+      // PAYLOAD - Sign()
+      // 1o. param = quais informações iremos colocar no token (dados, permissões, etc)
+      // 2o. param = é uma chave secreta, password (legal utilizar o site MD5). JAMAIS pode ir para frontend
+      // 3o. param = configurações do nosso token
+      const token = sign({}, secret, {
+         // subject sempre será o id do usuário
+         subject: user.id,
+         // tempo para expiração do token
+         expiresIn,
+      });
+
+      return {
+         user,
+         token,
+      };
+   }
 }
 
-export default AuthenticateUserService;
+export default AuthenticationUserService;

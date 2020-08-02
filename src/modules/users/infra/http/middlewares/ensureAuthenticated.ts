@@ -4,36 +4,53 @@ import { verify } from 'jsonwebtoken';
 import authConfig from '@config/auth';
 import AppError from '@shared/errors/AppError';
 
-interface ITokenPayLoad {
-  iat: number;
-  exp: number;
-  sub: string;
+// estrutura do retorno da variável DECOTED (ver abaixo)
+interface TokenPayload {
+   iat: number;
+   exp: number;
+   sub: string;
 }
 
-export default function unsureAuthenticated(
-  request: Request,
-  response: Response,
-  next: NextFunction,
+export default function ensureAuthenticated(
+   request: Request,
+   response: Response,
+   next: NextFunction,
 ): void {
-  const authHeader = request.headers.authorization;
+   // validação do token JWT
 
-  if (!authHeader) {
-    throw new AppError('JWT Token is missing', 401);
-  }
+   const authHeader = request.headers.authorization;
 
-  const [, token] = authHeader.split(' ');
+   if (!authHeader) {
+      throw new AppError('JWT token is missing.', 401);
+   }
 
-  try {
-    const decoded = verify(token, authConfig.jwt.secret);
+   // split -> criar uma posição no array a cada espaço
+   // como o token é (Bearer 3478f7834f), ele retorna 2 posições.
+   // A primeira se chama TYPE e a segunda TOKEN.
+   // Como vamos utilizar somente o TOKEN, usamos [, token].
+   // Se fosse usar as duas informações usariamos [type, token]
+   const [, token] = authHeader.split(' ');
 
-    const { sub } = decoded as ITokenPayLoad;
+   try {
+      const decoted = verify(token, authConfig.jwt.secret);
 
-    request.user = {
-      id: sub,
-    };
+      // console.log(decoted);
+      // {
+      //    iat: 1593271681,
+      //    exp: 1593358081,
+      //    sub: '2804c4df-8ce3-4fda-aaf8-96431b0c765d'
+      // }
 
-    return next();
-  } catch (err) {
-    throw new AppError('Invalid JWT token', 401);
-  }
+      // DEOCTED pode ser uma string ou um object.
+      // Para forçar um tipo, utilizar AS. (hack do TypeScript)
+      const { sub } = decoted as TokenPayload;
+
+      request.user = {
+         id: sub,
+      };
+
+      return next();
+   } catch {
+      throw new AppError('Invalid JWT token.', 401);
+   }
 }

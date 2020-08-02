@@ -29,7 +29,7 @@ class ListProviderDayAvailabilityService {
         month,
         year,
         day,
-      },  
+      },
     );
 
     const hourStart = 8;
@@ -46,12 +46,13 @@ class ListProviderDayAvailabilityService {
         appointment => getHours(appointment.date) === hour,
       );
 
-      // const compareDate = new Date(year, month - 1, day, hour);
+      const compareDate = new Date(year, month - 1, day, hour);
 
       return {
         hour,
-      //   available: !hasAppointmentsInHour && isAfter(compareDate, currentDate),
-        available: !hasAppointmentsInHour
+        // não ter agendamento no horário
+        // e ser depois do horário atual (agendamentos futuros)
+        available: !hasAppointmentsInHour && isAfter(compareDate, currentDate),
       };
     });
 

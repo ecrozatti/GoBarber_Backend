@@ -1,7 +1,7 @@
 import { injectable, inject } from 'tsyringe';
 
-import User from '@modules/appointments/services/users/infra/typeorm/entities/User';
-import IUsersRepository from '@modules/appointments/services/users/repositories/IUsersReopsitory';
+import User from '@modules/users/infra/typeorm/entities/User';
+import IUsersRepository from '@modules/users/repositories/IUsersReopsitory';
 
 interface IRequest {
    user_id: string;
@@ -10,7 +10,7 @@ interface IRequest {
 @injectable()
 class ListProvidersService {
    constructor(
-      @inject('UsersRepository')   
+      @inject('UsersRepository')
       private usersRepository: IUsersRepository,
    ) {}
 

@@ -1,28 +1,17 @@
 import { Router } from 'express';
-import { celebrate, Segments, Joi } from 'celebrate';
 
 import ProfileController from '../controllers/ProfileController';
 
-import ensureAuthenticated from '../middlewares/ensureAuthenticated';
+import ensureAuthenticated from '@modules/users/infra/http/middlewares/ensureAuthenticated';
 
 const profileRouter = Router();
 const profileController = new ProfileController();
 
+// rotas acessiceis somente se o usuario estiver logado
+// E se estiver logado, busca os dados do usuario
 profileRouter.use(ensureAuthenticated);
 
+profileRouter.get('/', profileController.show);
 profileRouter.put('/', profileController.update);
-profileRouter.get(
-  '/',
-  celebrate({
-    [Segments.BODY]: {
-      name: Joi.string().required(),
-      email: Joi.string().email().required(),
-      old_password: Joi.string(),
-      password: Joi.string(),
-      password_confirmation: Joi.string().valid(Joi.ref('password')),
-    },
-  }),
-  profileController.show,
-);
 
 export default profileRouter;
