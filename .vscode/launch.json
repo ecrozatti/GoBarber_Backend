@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+			//Toda vez que inicar a aplicação, roda o debug
+            //"request": "launch",
+
+			//Dessa forma com a aplicação rodando, podemos rodar qdo necessário (play)
+            "request": "attach",
+
+			//Forma de inspecionar o Node, pq nosso JS esta rodando no Node.
+            "protocol": "inspector",
+            "restart": true,
+            "name": "Debug",
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+        }
+    ]
+}
