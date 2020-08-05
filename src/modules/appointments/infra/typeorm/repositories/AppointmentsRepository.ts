@@ -20,9 +20,9 @@ class AppointmentsRepository implements IAppointmentsRepository {
       this.ormRepository = getRepository(Appointment);
    }
 
-   public async findByDate(date: Date): Promise<Appointment | undefined> {
+   public async findByDate(date: Date, provider_id: string): Promise<Appointment | undefined> {
       const findAppointment = await this.ormRepository.findOne({
-         where: { date },
+         where: { date, provider_id },
       });
 
       return findAppointment;
@@ -31,7 +31,7 @@ class AppointmentsRepository implements IAppointmentsRepository {
    public async findAllInMonthFromProvider({ provider_id, month, year }: IFindAllInMonthFromProviderDTO): Promise<Appointment[]> {
       // preenche com zeros a esquerda
       const parsedMonth = String(month).padStart(2, '0');
-  
+
       const appointments = await this.ormRepository.find({
         where: {
           provider_id,
@@ -41,7 +41,7 @@ class AppointmentsRepository implements IAppointmentsRepository {
           ),
         },
       });
-  
+
       return appointments;
     }
 
@@ -65,8 +65,12 @@ class AppointmentsRepository implements IAppointmentsRepository {
 
    // Criamos e salvamos o agendamento no BD, em um unico metodo.
    // diferente da forma que faziamos no SERVICE onde tinhamos um metodo CREATE e outro SAVE.
-   public async create({ provider_id, date }: ICreateAppointmentDTO): Promise<Appointment> {
-      const appointment = this.ormRepository.create({ provider_id, date });
+   public async create({ provider_id, user_id, date }: ICreateAppointmentDTO): Promise<Appointment> {
+      const appointment = this.ormRepository.create({
+         provider_id,
+         user_id,
+         date
+      });
 
       await this.ormRepository.save(appointment);
 

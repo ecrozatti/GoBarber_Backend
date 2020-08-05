@@ -17,44 +17,43 @@ type IResponse = Array<{
 
 @injectable()
 class ListProviderDayAvailabilityService {
-  constructor(
-    @inject('AppointmentsRepository')
-    private appointmentsRepository: IAppointmentsRepository,
-  ) {}
+   constructor(
+      @inject('AppointmentsRepository')
+      private appointmentsRepository: IAppointmentsRepository,
+   ) {}
 
-  public async execute({ provider_id, month, year, day }: IRequest): Promise<IResponse> {
-    const appointments = await this.appointmentsRepository.findAllInDayFromProvider(
-      {
+   public async execute({ provider_id, month, year, day }: IRequest): Promise<IResponse> {
+      const appointments = await this.appointmentsRepository.findAllInDayFromProvider({
         provider_id,
         month,
         year,
         day,
-      },
-    );
+      });
 
-    const hourStart = 8;
+      const hourStart = 8;
 
-    const eachHourArray = Array.from(
-      { length: 10 },
-      (_, index) => index + hourStart,
-    );
-
-    const currentDate = new Date(Date.now());
-
-    const availability = eachHourArray.map(hour => {
-      const hasAppointmentsInHour = appointments.find(
-        appointment => getHours(appointment.date) === hour,
+      const eachHourArray = Array.from(
+         { length: 10 },
+         (_, index) => index + hourStart,
       );
 
-      const compareDate = new Date(year, month - 1, day, hour);
+      const currentDate = new Date(Date.now());
 
-      return {
-        hour,
-        // não ter agendamento no horário
-        // e ser depois do horário atual (agendamentos futuros)
-        available: !hasAppointmentsInHour && isAfter(compareDate, currentDate),
-      };
-    });
+      // percorre as horas do dia de trabalho
+      const availability = eachHourArray.map(hour => {
+         const hasAppointmentsInHour = appointments.find(
+            appointment => getHours(appointment.date) === hour,
+         );
+
+         const compareDate = new Date(year, month - 1, day, hour);
+
+         return {
+            hour,
+            // não ter agendamento no horário
+            // e ser depois do horário atual (agendamentos futuros)
+            available: !hasAppointmentsInHour && isAfter(compareDate, currentDate),
+         };
+      });
 
     return availability;
   }
