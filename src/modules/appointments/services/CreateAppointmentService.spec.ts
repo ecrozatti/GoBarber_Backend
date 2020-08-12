@@ -1,16 +1,22 @@
 import AppError from '@shared/errors/AppError';
 
 import FakeAppointmentsRepository from '../repositories/fakes/FakeAppointmentsRepository';
+import FakeNotificationsRepository from '@modules/notifications/repositories/fakes/FakeNotificationsRepository';
 import CreateAppointmentService from './CreateAppointmentService';
 
 let fakeAppointmentsRepository: FakeAppointmentsRepository;
+let fakeNotificationsRepository: FakeNotificationsRepository;
 let createAppointment: CreateAppointmentService;
 
 describe('CreateAppointment', () => {
    beforeEach(() => {
       fakeAppointmentsRepository = new FakeAppointmentsRepository
+      fakeNotificationsRepository = new FakeNotificationsRepository
       // Nos testes não usamos a injeção de dependência, por isso passo fakeRepository como parâmetro
-      createAppointment = new CreateAppointmentService(fakeAppointmentsRepository);
+      createAppointment = new CreateAppointmentService(
+         fakeAppointmentsRepository,
+         fakeNotificationsRepository
+      );
    });
 
    it('should be able to create a new appointment', async () => {

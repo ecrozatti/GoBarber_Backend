@@ -1,4 +1,4 @@
-import { startOfHour, isBefore, getHours } from 'date-fns';
+import { startOfHour, isBefore, getHours, format } from 'date-fns';
 // import { getCustomRepository } from 'typeorm';
 import { injectable, inject } from 'tsyringe';
 
@@ -7,6 +7,7 @@ import AppError from '@shared/errors/AppError';
 import Appointment from '../infra/typeorm/entities/Appointment';
 // import AppointmentsRepository from '../infra/typeorm/repositories/AppointmentsRepository';
 import IAppointmentsRepository from '../repositories/IAppointmentsRepository';
+import INotificationsRepository from '@modules/notifications/repositories/INotificationsRepository';
 
 // requestDTO
 interface IRequest {
@@ -20,7 +21,10 @@ interface IRequest {
 class CreateAppointmentService {
    constructor(
       @inject('AppointmentsRepository')
-      private appointmentsRepository: IAppointmentsRepository
+      private appointmentsRepository: IAppointmentsRepository,
+
+      @inject('NotificationsRepository')
+      private notificationsRepository: INotificationsRepository,
    ) {}
 
    // Abaixo seria um hack typescript para o codigo acima,.
@@ -57,10 +61,18 @@ class CreateAppointmentService {
       }
 
       // Cria a instância do agendamento, mas não salva no BD.
-      const appointment = this.appointmentsRepository.create({
+      const appointment = await this.appointmentsRepository.create({
          provider_id,
          user_id,
          date: appointmentDate,
+      });
+
+      // usar aspas duplas por fora e simples por dentro para diferenciar o que é texto
+      const dateFormatted = format(appointmentDate, "dd/MM/yyyy 'às' HH:mm'h'");
+
+      await this.notificationsRepository.create({
+         recipient_id: provider_id,
+         content: `Novo agendamento para o dia ${dateFormatted}`
       });
 
       // Para salvar no BD
