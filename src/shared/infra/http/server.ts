@@ -2,6 +2,8 @@ import express, { Request, Response, NextFunction } from 'express';
 import 'express-async-errors';
 import cors from 'cors';
 import 'reflect-metadata';
+import { errors } from 'celebrate';
+import 'dotenv/config';
 
 import routes from './routes';
 import uploadConfig from '@config/upload';
@@ -17,6 +19,9 @@ app.use(express.json());
 // app.use('/files', express.static(uploadConfig.directory));
 app.use('/files', express.static(uploadConfig.uploadsFolder));
 app.use(routes);
+
+// erros de validacao via Celebrate
+app.use(errors());
 
 app.use((err: Error, request: Request, response: Response, _: NextFunction) => {
    // se for um erro conhecido/originado pela aplicação,

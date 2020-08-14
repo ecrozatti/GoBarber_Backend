@@ -5,12 +5,15 @@
 /node_modules
 /.pnp
 .pnp.js
+.env
+ormconfig.json
 
 # testing
 /coverage
 
 # production
 /build
+/temp
 
 # misc
 .DS_Store
