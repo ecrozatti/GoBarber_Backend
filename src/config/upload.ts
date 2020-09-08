@@ -1,24 +1,49 @@
 import path from 'path';
 import crypto from 'crypto';
-import multer from 'multer';
+import multer, { StorageEngine } from 'multer';
+
+interface IStorageConfig {
+   driver: 'disk' | 's3';
+
+   tmpFolder: string;
+   uploadsFolder: string;
+
+   multer: {
+      storage: StorageEngine;
+   };
+
+   config: {
+      disk: {};
+      aws: {
+         bucket: string;
+      };
+   };
+}
 
 const tmpFolder = path.resolve(__dirname, '..', '..', 'tmp');
 
 export default {
-   tmpFolder,
-   uploadsFolder: path.resolve(tmpFolder, 'uploads'),
+  driver: process.env.STORAGE_DRIVER || 'disk',
 
-   // por enquanto vamos armazenar as imagens no disco.
-   storage: multer.diskStorage({
-      // __dirname trás o caminho completo até a pasta CONFIG.
-      // Depois, perado por vírcula, adicionamos os prócximos caminhos.
+  tmpFolder,
+  uploadsFolder: path.resolve(tmpFolder, 'uploads'),
+
+  multer: {
+    storage: multer.diskStorage({
       destination: tmpFolder,
+      filename(req, file, callback) {
+        const fileHash = crypto.randomBytes(10).toString('hex');
+        const fileName = `${fileHash}-${file.originalname}`;
 
-      filename(request, file, callback) {
-         const fileHash = crypto.randomBytes(10).toString('hex');
-         const fileName = `${fileHash}-${file.originalname}`;
-
-         return callback(null, fileName);
+        return callback(null, fileName);
       },
-   }),
-};
+    }),
+  },
+
+  config: {
+    disk: {},
+    aws: {
+      bucket: 'app-gobarber-crozatti',
+    },
+  },
+} as IStorageConfig;
