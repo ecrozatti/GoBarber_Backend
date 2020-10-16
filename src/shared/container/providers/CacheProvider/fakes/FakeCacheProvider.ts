@@ -4,7 +4,7 @@ interface ICacheData {
   [key: string]: string;
 }
 
-export default class RedisCacheProvider implements ICacheProvider {
+export default class FakeCacheProvider implements ICacheProvider {
   private cache: ICacheData = {};
 
   public async save(key: string, value: any): Promise<void> {
@@ -12,7 +12,7 @@ export default class RedisCacheProvider implements ICacheProvider {
   }
 
   public async recover<T>(key: string): Promise<T | null> {
-    const data = await this.cache[key];
+    const data = this.cache[key];
 
     if (!data) {
       return null;

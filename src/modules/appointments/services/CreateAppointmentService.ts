@@ -8,6 +8,7 @@ import Appointment from '../infra/typeorm/entities/Appointment';
 // import AppointmentsRepository from '../infra/typeorm/repositories/AppointmentsRepository';
 import IAppointmentsRepository from '../repositories/IAppointmentsRepository';
 import INotificationsRepository from '@modules/notifications/repositories/INotificationsRepository';
+import ICacheProvider from '@shared/container/providers/CacheProvider/models/ICacheProvider';
 
 // requestDTO
 interface IRequest {
@@ -25,6 +26,9 @@ class CreateAppointmentService {
 
       @inject('NotificationsRepository')
       private notificationsRepository: INotificationsRepository,
+
+      @inject('CacheProvider')
+      private cacheProvider: ICacheProvider,
    ) {}
 
    // Abaixo seria um hack typescript para o codigo acima,.
@@ -78,6 +82,9 @@ class CreateAppointmentService {
       // Para salvar no BD
       // await appointmentsRepository.save(appointment);
       // Unificamos CREATE e SAVE, no AppointmentsRepository
+
+      // yyyy-M-d --> nao inclui zero a esquerda no mes e no dia
+      await this.cacheProvider.invalidate(`provider-appointments:${provider_id}:${format(appointmentDate, 'yyyy-M-d')}`);
 
       return appointment;
    }

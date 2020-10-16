@@ -20,6 +20,8 @@ export default class RedisCacheProvider implements ICacheProvider {
       return null;
     }
 
+    // Isso indica que o retorna eh exatamente o mesmo que usamor no recover()
+    // Apenas JSON.parse(data) retornaria ANY.
     const parsedData = JSON.parse(data) as T;
 
     return parsedData;
@@ -30,10 +32,13 @@ export default class RedisCacheProvider implements ICacheProvider {
   }
 
   public async invalidatePrefix(prefix: string): Promise<void> {
+      // todas as chaves que comecam com esse prefixo
     const keys = await this.client.keys(`${prefix}:*`);
 
+    // pipeline, quando queremos fazer multiplas operacoes ao mesmo tempo
     const pipeline = this.client.pipeline();
 
+    // executa os deletes ao mesmo tempo com o pipeline
     keys.forEach(key => pipeline.del(key));
 
     await pipeline.exec();
