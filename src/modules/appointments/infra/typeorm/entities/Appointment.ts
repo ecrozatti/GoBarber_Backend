@@ -29,6 +29,10 @@ class Appointment {
    @Column()
    user_id: string;
 
+   // {eager: true} --> Tras todos os dados do usuario, nao apenas o id.
+   // Atencao, usar isso somente qdo fazer muito sentido, pq sempre carregara tudo
+   // Por exemplo: peiddo de um e-commerce e os seus respectivos produtos (ao carregar um pedido, sempre trazer os produtos)
+   // @ManyToOne(() => User, { eager: true })
    @ManyToOne(() => User)
    @JoinColumn({ name: 'user_id' })
    user: User;

@@ -45,6 +45,7 @@ class ListProviderAppointmentsService {
 
          // console.log('Buscou no BD.');
 
+         // classToClass(appointments) --> salva do cache de forma ja serializada
          await this.cacheProvider.save(cacheKey, classToClass(appointments));
       }
       return appointments;
