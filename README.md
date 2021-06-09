@@ -14,11 +14,11 @@
 </h1>
 
 ## :page_with_curl: Sobre
-![GitHub language count](https://img.shields.io/github/languages/count/ecrozatti/GoFinances_NodeJS)
-![GitHub top language](https://img.shields.io/github/languages/top/ecrozatti/GoFinances_NodeJS)
-![GitHub repo size](https://img.shields.io/github/repo-size/ecrozatti/GoFinances_NodeJS)
-![GitHub](https://img.shields.io/github/license/ecrozatti/GoFinances_NodeJS)
-![GitHub last commit](https://img.shields.io/github/last-commit/ecrozatti/GoFinances_NodeJS)
+![GitHub language count](https://img.shields.io/github/languages/count/ecrozatti/GoBarber_Backend)
+![GitHub top language](https://img.shields.io/github/languages/top/ecrozatti/GoBarber_Backend)
+![GitHub repo size](https://img.shields.io/github/repo-size/ecrozatti/GoBarber_Backend)
+![GitHub](https://img.shields.io/github/license/ecrozatti/GoBarber_Backend)
+![GitHub last commit](https://img.shields.io/github/last-commit/ecrozatti/GoBarber_Backend)
 
 Este repositório contém a API REST da aplicação GoBarber. Projeto backend usando Node.js com TypeScript, banco de dados PostegreSQL com TypeORM e upload de imagens com Multer.
 
